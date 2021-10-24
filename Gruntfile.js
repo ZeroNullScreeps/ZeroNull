@@ -25,14 +25,12 @@ module.exports = function (grunt) {
 				filter:  'isFile',
 				cwd:     'dist/',
 				src:     '**',
-				dest:    'Update This Path'
+				dest:    'C:/Users/Jonathan/AppData/Local/Screeps/scripts/10_0_0_2___21025/ZeroNull'
 			},
 		},
 	});
 
 	grunt.registerTask('main', ['test', 'merge', 'write']);
-	grunt.registerTask('sandbox', ['merge', 'write-private']);
 	grunt.registerTask('merge', 'mergeFiles');
-	grunt.registerTask('write', 'screeps');
-	grunt.registerTask('write-private', 'copy');
+	grunt.registerTask('local', ['merge', 'copy']);
 };
