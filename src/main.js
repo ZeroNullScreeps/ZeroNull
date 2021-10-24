@@ -1,30 +1,51 @@
-let creepLogic = require('./creeps');
-let roomLogic = require('./room');
-let prototypes = require('./prototypes');
+// Require Prototypes
+require('./prototype.creep')();
+require('./prototype.room')();
 
+// Require Utilities
+const memoryController = require('./memoryController');
+
+// Require Room Logic
+const roomLogic = require('./roomLogic');
+
+// Require Role Logic
+const roleLogic = require('./roleLogic');
 
 module.exports.loop = function () {
+    // Run the memory controller initialization
+    memoryController.init();
+
     // make a list of all of our rooms
-    Game.myRooms = _.filter(Game.rooms, r => r.controller && r.controller.level > 0 && r.controller.my);
-
-    // run spwan logic for each room in our empire
-    _.forEach(Game.myRooms, r => roomLogic.spawning(r));
+    Memory.gameData.myRooms = _.filter(Game.rooms, r => r.controller && r.controller.level > 0 && r.controller.my);
     
-    // run each creep role see /creeps/index.js
-    for(var name in Game.creeps) {
-        var creep = Game.creeps[name];
+    /**
+     * Loop through all our rooms. This is the main loop
+     * that handles spawning and creep functionality.
+     */
+     _.forEach(Memory.gameData.myRooms, function(room) {
 
-        let role = creep.memory.role;
-        if (creepLogic[role]) {
-            creepLogic[role].run(creep);
-        }
-    }
+        // Run the room defense module
+        // roomLogic.defense(room);
 
-    // free up memory if creep no longer exists
-    for(var name in Memory.creeps) {
-        if(!Game.creeps[name]) {
-            delete Memory.creeps[name];
-            console.log('Clearing non-existing creep memory:', name);
+        // Run the spawning logic to see if a
+        // creep needs to be spawned inside of
+        // the current room.
+        roomLogic.attemptToSpawnCreep(room);
+
+        // Grab all of the creeps and loop
+        // through them and run their specified
+        // role functions. More info in
+        // ./creeps/*.js
+        for(var name in Game.creeps) {
+            var creep = Game.creeps[name];
+
+            let role = creep.memory.role;
+            if (roleLogic[role]) {
+                roleLogic[role].run(creep);
+            }
         }
-    }
+    });
+    
+    memoryController.clean();
+    
 }
