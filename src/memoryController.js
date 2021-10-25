@@ -7,7 +7,7 @@ module.exports = {
         for(var name in Memory.creeps) {
             if(!Game.creeps[name]) {
                 delete Memory.creeps[name];
-                console.log('Clearing non-existing creep memory:', name);
+                console.log("<font color=#3498db>Clearing non-existing creep memory:</font>", name);
             }
         }
     },
