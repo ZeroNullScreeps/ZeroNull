@@ -22,7 +22,49 @@ module.exports = {
             if(!buildMemory.extensions) {
                 this.buildExtensions(spawn);
             }
+            // Towers
+            if(!buildMemory.towers) {
+                this.buildTowers(spawn);
+            }
 
+        }
+    },
+    buildTowers: function(spawn) {
+        console.log("<font color=#9b59b6>[Base Builder] Building Towers...</font>");
+        let controllerLevel = spawn.room.controller.level;
+        let positions = [];
+        if(controllerLevel >= 3) {
+            positions.push(
+                {x: spawn.pos.x - 4, y: spawn.pos.y - 2},
+            );
+        }
+        if(controllerLevel >= 5) {
+            positions.push(
+                {x: spawn.pos.x - 4, y: spawn.pos.y + 2},
+            );
+        }
+        if(controllerLevel >= 7) {
+            positions.push(
+                {x: spawn.pos.x - 6, y: spawn.pos.y},
+            );
+        }
+        if(controllerLevel >= 8) {
+            positions.push(
+                {x: spawn.pos.x - 4, y: spawn.pos.y - 1},
+                {x: spawn.pos.x - 4, y: spawn.pos.y + 1},
+                {x: spawn.pos.x - 2, y: spawn.pos.y},
+            );
+        }
+
+        _.forEach(positions, function(position) {
+            let site = spawn.room.createConstructionSite(position.x, position.y, STRUCTURE_TOWER);
+            if(site === 0) {
+                console.log(`Built tower at: ${position.x}, ${position.y}`);
+            }
+        });
+
+        if(controllerLevel === 8) {
+            Memory.gameData.buildQueue[spawn.room.name].towers = true;
         }
     },
     buildExtensions: function(spawn) {
