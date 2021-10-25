@@ -1,5 +1,6 @@
 const utilsCreep = require('./utils.creep');
 const roleLogic = require('./roleLogic');
+const ConsoleLog = require('./console.log');
 
 module.exports = {
     attemptToSpawnCreep: function(room) {
@@ -24,7 +25,7 @@ module.exports = {
             // in the room. If there are no creeps then
             // spawn a basic harvester creep.
             if(_.filter(Game.creeps).length <= 1) {
-                console.log("<font color=#e74c3c>Number of creeps in the room is less then or equal to 1. Spawning default creep!</font>");
+                ConsoleLog.danger("Number of creeps in the room is less then or equal to 1. Spawning default creep!", "Creep Spawner");
                 creepSpawnData.body = [WORK,CARRY,MOVE];
                 creepSpawnData.memory = {role: 'harvester'};
             }
@@ -46,10 +47,10 @@ module.exports = {
                 // Output the appropriate error message.
                 switch(result) {
                     case ERR_NOT_ENOUGH_ENERGY:
-                        console.log("<font color=#f1c40f>Not enough energy to spawn creep. Waiting for a fill up!</font>");
+                        ConsoleLog.warning("Not enough energy to spawn creep. Waiting for a fill up!", "Creep Spawner");
                         break;
                     case ERR_BUSY:
-                        console.log("<font color=#f1c40f>Busy spawning another creep. Waiting for my turn.</font>");
+                        ConsoleLog.warning("Busy spawning another creep. Waiting for my turn.", "Creep Spawner");
                         break;
                 }
                 // Update the Memory variables
@@ -59,9 +60,9 @@ module.exports = {
     
             // If the spawn was successful!
             if(result === 0) {
-                console.log(`<font color=#27ae60>Spawned Creep:</font> ${creepSpawnData.name}`);
-                console.log(`<font color=#27ae60>Creep Body</font>: ${creepSpawnData.body}`);
-                console.log(`<font color=#27ae60>Creep Memory</font>: ${JSON.stringify(creepSpawnData.memory)}`);
+                ConsoleLog.success(creepSpawnData.name, "Spawned Creep");
+                ConsoleLog.success(creepSpawnData.body, "Creep Body");
+                ConsoleLog.success(JSON.stringify(creepSpawnData.memory), "Creep Memory");
                 Memory.gameData.spawnFailed = false;
             }
         }
