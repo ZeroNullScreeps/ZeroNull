@@ -55,11 +55,13 @@ __modules[0] = function(module, exports) {
 __require(1,0)();
 __require(2,0)();
 const memoryController = __require(3,0);
-const roomLogic = __require(4,0);
-const roleLogic = __require(5,0);
+const timedCommands = __require(4,0);
+const roomLogic = __require(5,0);
+const roleLogic = __require(6,0);
 
 module.exports.loop = function () {
     memoryController.init();
+    timedCommands.run();
     Memory.gameData.myRooms = _.filter(Game.rooms, r => r.controller && r.controller.level > 0 && r.controller.my);
     
     /**
@@ -373,10 +375,45 @@ module.exports = {
 return module.exports;
 }
 /********** End of module 3: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\memoryController.js **********/
-/********** Start module 4: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\roomLogic.js **********/
+/********** Start module 4: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\timedCommands.js **********/
 __modules[4] = function(module, exports) {
-const utilsCreep = __require(6,4);
-const roleLogic = __require(5,4);
+module.exports = {
+    run: function() {
+        if(Memory.gameData.timedCommands.lastRun === undefined) {
+            this.init();
+            this.runCommands();
+        }
+        if(this.checkShouldRun()) {
+            this.runCommands();
+        }
+    },
+    init: function() {
+        console.log("<font color=#e74c3c>[Timed Commands] Can not find timedCommands in Memory. Initiailizing...</font>");
+        Memory.gameData.timedCommands = {
+            lastRun: Game.time,
+            interval: 100,
+        };
+    },
+    checkShouldRun: function() {
+        let lastRun = Memory.gameData.timedCommands.lastRun;
+        let interval = Memory.gameData.timedCommands.interval;
+
+        if((lastRun + interval) === Game.time) {
+            Memory.gameData.timedCommands.lastRun = Game.time;
+            return true;
+        }
+    },
+    runCommands: function() {
+        console.log("<font color=#2ecc71>[Timed Commands] Running timed commands.</font>");
+    },
+}
+return module.exports;
+}
+/********** End of module 4: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\timedCommands.js **********/
+/********** Start module 5: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\roomLogic.js **********/
+__modules[5] = function(module, exports) {
+const utilsCreep = __require(7,5);
+const roleLogic = __require(6,5);
 
 module.exports = {
     attemptToSpawnCreep: function(room) {
@@ -421,20 +458,20 @@ module.exports = {
 }
 return module.exports;
 }
-/********** End of module 4: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\roomLogic.js **********/
-/********** Start module 5: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\roleLogic.js **********/
-__modules[5] = function(module, exports) {
+/********** End of module 5: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\roomLogic.js **********/
+/********** Start module 6: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\roleLogic.js **********/
+__modules[6] = function(module, exports) {
 module.exports = {
-    harvester: __require(7,5),
-    upgrader: __require(8,5),
-    builder: __require(9,5),
-    repairer: __require(10,5),
+    harvester: __require(8,6),
+    upgrader: __require(9,6),
+    builder: __require(10,6),
+    repairer: __require(11,6),
 }
 return module.exports;
 }
-/********** End of module 5: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\roleLogic.js **********/
-/********** Start module 6: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\utils.creep.js **********/
-__modules[6] = function(module, exports) {
+/********** End of module 6: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\roleLogic.js **********/
+/********** Start module 7: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\utils.creep.js **********/
+__modules[7] = function(module, exports) {
 module.exports = {
     getMinimum: function(type) {
         if(!Memory.gameData.creepRoles[type].minimum) {
@@ -476,10 +513,10 @@ module.exports = {
 }
 return module.exports;
 }
-/********** End of module 6: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\utils.creep.js **********/
-/********** Start module 7: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.harvester.js **********/
-__modules[7] = function(module, exports) {
-const utilsCreep = __require(6,7);
+/********** End of module 7: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\utils.creep.js **********/
+/********** Start module 8: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.harvester.js **********/
+__modules[8] = function(module, exports) {
+const utilsCreep = __require(7,8);
 
 module.exports = {
 
@@ -524,10 +561,10 @@ module.exports = {
 };
 return module.exports;
 }
-/********** End of module 7: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.harvester.js **********/
-/********** Start module 8: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.upgrader.js **********/
-__modules[8] = function(module, exports) {
-const utilsCreep = __require(6,8);
+/********** End of module 8: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.harvester.js **********/
+/********** Start module 9: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.upgrader.js **********/
+__modules[9] = function(module, exports) {
+const utilsCreep = __require(7,9);
 
 module.exports = {
     /** @param {Creep} creep **/
@@ -571,10 +608,10 @@ module.exports = {
 }
 return module.exports;
 }
-/********** End of module 8: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.upgrader.js **********/
-/********** Start module 9: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.builder.js **********/
-__modules[9] = function(module, exports) {
-const utilsCreep = __require(6,9);
+/********** End of module 9: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.upgrader.js **********/
+/********** Start module 10: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.builder.js **********/
+__modules[10] = function(module, exports) {
+const utilsCreep = __require(7,10);
 
 module.exports = {
     /** @param {Creep} creep **/
@@ -618,10 +655,10 @@ module.exports = {
 }
 return module.exports;
 }
-/********** End of module 9: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.builder.js **********/
-/********** Start module 10: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.repairer.js **********/
-__modules[10] = function(module, exports) {
-const utilsCreep = __require(6,10);
+/********** End of module 10: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.builder.js **********/
+/********** Start module 11: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.repairer.js **********/
+__modules[11] = function(module, exports) {
+const utilsCreep = __require(7,11);
 
 module.exports = {
     /** @param {Creep} creep **/
@@ -665,7 +702,7 @@ module.exports = {
 }
 return module.exports;
 }
-/********** End of module 10: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.repairer.js **********/
+/********** End of module 11: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.repairer.js **********/
 /********** Footer **********/
 if(typeof module === "object")
 	module.exports = __require(0);

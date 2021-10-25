@@ -4,6 +4,7 @@ require('./prototype.room')();
 
 // Require Utilities
 const memoryController = require('./memoryController');
+const timedCommands = require('./timedCommands');
 
 // Require Room Logic
 const roomLogic = require('./roomLogic');
@@ -14,6 +15,9 @@ const roleLogic = require('./roleLogic');
 module.exports.loop = function () {
     // Run the memory controller initialization
     memoryController.init();
+
+    // Run the timed command logic
+    timedCommands.run();
 
     // make a list of all of our rooms
     Memory.gameData.myRooms = _.filter(Game.rooms, r => r.controller && r.controller.level > 0 && r.controller.my);
