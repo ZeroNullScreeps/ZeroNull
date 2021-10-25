@@ -21,7 +21,7 @@ module.exports = {
         console.log("<font color=#2ecc71>[Timed Commands] Running timed commands.</font>");
 
         // Update the Builder Minimum value
-        // this.updateBuilderMin();
+        this.updateBuilderMin();
         // Run the Base Builder Module
         this.runBaseBuilder();
         // Give a report to console
@@ -61,4 +61,15 @@ module.exports = {
             baseBuilder.run(room);
         });
     },
+    updateBuilderMin: function() {
+        // foreach room, if there are construction sites, set the creep builder role minimum to 5, otherwise set it to 2
+        _.forEach(Game.rooms, function(room) {
+            let constructionSites = room.find(FIND_CONSTRUCTION_SITES);
+            if(constructionSites.length > 0) {
+                Memory.gameData.creepRoles.builder.minimum = 5;
+            } else {
+                Memory.gameData.creepRoles.builder.minimum = 2;
+            }
+        });
+    }
 }

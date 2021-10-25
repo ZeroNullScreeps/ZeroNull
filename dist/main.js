@@ -460,6 +460,7 @@ module.exports = {
     },
     runCommands: function() {
         console.log("<font color=#2ecc71>[Timed Commands] Running timed commands.</font>");
+        this.updateBuilderMin();
         this.runBaseBuilder();
         this.giveReport();
     },
@@ -496,6 +497,16 @@ module.exports = {
             baseBuilder.run(room);
         });
     },
+    updateBuilderMin: function() {
+        _.forEach(Game.rooms, function(room) {
+            let constructionSites = room.find(FIND_CONSTRUCTION_SITES);
+            if(constructionSites.length > 0) {
+                Memory.gameData.creepRoles.builder.minimum = 5;
+            } else {
+                Memory.gameData.creepRoles.builder.minimum = 2;
+            }
+        });
+    }
 }
 return module.exports;
 }
