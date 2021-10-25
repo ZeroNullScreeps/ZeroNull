@@ -1,6 +1,6 @@
 const roleLogic = require('./roleLogic');
 let creepTypes = Object.keys(roleLogic);
-
+const baseBuilder = require('./base.build');
 module.exports = {
     run: function() {
         // Check if the timedCommands are in Memory
@@ -23,7 +23,7 @@ module.exports = {
         // Update the Builder Minimum value
         // this.updateBuilderMin();
         // Run the Base Builder Module
-        // this.runBaseBuilder();
+        this.runBaseBuilder();
         // Give a report to console
         this.giveReport();
     },
@@ -53,6 +53,12 @@ module.exports = {
             let currentCount = _.filter(Game.creeps, (creep) => creep.memory.role === type).length;
             let minimum = Memory.gameData.creepRoles[type].minimum;
             console.log("<font color=#3498db>" + type.toTitleCase() + ":</font> " + currentCount + " / " + minimum);
+        });
+    },
+    runBaseBuilder: function() {
+        console.log("<font color=#3498db>[Timed Commands] Running Base Builder</font>");
+        _.forEach(Memory.gameData.myRooms, function(room) {
+            baseBuilder.run(room);
         });
     },
 }

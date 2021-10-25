@@ -447,7 +447,7 @@ return module.exports;
 __modules[6] = function(module, exports) {
 const roleLogic = __require(8,6);
 let creepTypes = Object.keys(roleLogic);
-
+const baseBuilder = __require(9,6);
 module.exports = {
     run: function() {
         if(Memory.gameData.timedCommands.lastRun === undefined) {
@@ -460,6 +460,7 @@ module.exports = {
     },
     runCommands: function() {
         console.log("<font color=#2ecc71>[Timed Commands] Running timed commands.</font>");
+        this.runBaseBuilder();
         this.giveReport();
     },
     init: function() {
@@ -489,13 +490,19 @@ module.exports = {
             console.log("<font color=#3498db>" + type.toTitleCase() + ":</font> " + currentCount + " / " + minimum);
         });
     },
+    runBaseBuilder: function() {
+        console.log("<font color=#3498db>[Timed Commands] Running Base Builder</font>");
+        _.forEach(Memory.gameData.myRooms, function(room) {
+            baseBuilder.run(room);
+        });
+    },
 }
 return module.exports;
 }
 /********** End of module 6: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\timedCommands.js **********/
 /********** Start module 7: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\roomLogic.js **********/
 __modules[7] = function(module, exports) {
-const utilsCreep = __require(9,7);
+const utilsCreep = __require(10,7);
 const roleLogic = __require(8,7);
 
 module.exports = {
@@ -545,16 +552,275 @@ return module.exports;
 /********** Start module 8: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\roleLogic.js **********/
 __modules[8] = function(module, exports) {
 module.exports = {
-    harvester: __require(10,8),
-    upgrader: __require(11,8),
-    builder: __require(12,8),
-    repairer: __require(13,8),
+    harvester: __require(11,8),
+    upgrader: __require(12,8),
+    builder: __require(13,8),
+    repairer: __require(14,8),
 }
 return module.exports;
 }
 /********** End of module 8: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\roleLogic.js **********/
-/********** Start module 9: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\utils.creep.js **********/
+/********** Start module 9: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\base.build.js **********/
 __modules[9] = function(module, exports) {
+module.exports = {
+    run: function(room) {
+        console.log("<font color=#9b59b6>[Base Builder] Running Base Builder Module!</font>");
+        this.checkBuildMemory(room);
+        let buildMemory = Memory.gameData.buildQueue[room.name];
+        let spawn = Game.rooms[room.name].find(FIND_MY_STRUCTURES, {filter: { structureType: STRUCTURE_SPAWN }})[0];
+        if(!buildMemory.validSpawn) {
+            this.checkBuildArea(spawn);
+        } else {
+            if(!buildMemory.roads) {
+                this.buildRoads(spawn);
+            }
+            if(!buildMemory.extensions) {
+                this.buildExtensions(spawn);
+            }
+
+        }
+    },
+    buildExtensions: function(spawn) {
+        console.log("<font color=#9b59b6>[Base Builder] Building Extensions...</font>");
+        let controllerLevel = spawn.room.controller.level;
+        let positions = [];
+        if(controllerLevel >= 2) {
+            positions.push(
+                {x: (spawn.pos.x - 5), y: (spawn.pos.y - 5)},
+                {x: (spawn.pos.x - 4), y: (spawn.pos.y - 5)},
+                {x: (spawn.pos.x - 3), y: (spawn.pos.y - 5)},
+                {x: (spawn.pos.x - 2), y: (spawn.pos.y - 5)},
+                {x: (spawn.pos.x - 3), y: (spawn.pos.y - 4)},
+            );
+        }
+        if(controllerLevel >= 3) {
+            positions.push(
+                { x: (spawn.pos.x - 7), y: (spawn.pos.y - 4) },
+                { x: (spawn.pos.x - 6), y: (spawn.pos.y - 4) },
+                { x: (spawn.pos.x - 7), y: (spawn.pos.y - 3) },
+                { x: (spawn.pos.x - 6), y: (spawn.pos.y - 3) },
+                { x: (spawn.pos.x - 5), y: (spawn.pos.y - 3) },
+            );
+        }
+        if(controllerLevel >= 4) {
+            positions.push(
+                { x: (spawn.pos.x - 8), y: (spawn.pos.y - 3) },
+                { x: (spawn.pos.x - 9), y: (spawn.pos.y - 2) },
+                { x: (spawn.pos.x - 8), y: (spawn.pos.y - 2) },
+                { x: (spawn.pos.x - 7), y: (spawn.pos.y - 2) },
+                { x: (spawn.pos.x - 6), y: (spawn.pos.y - 2) },
+                { x: (spawn.pos.x - 9), y: (spawn.pos.y - 1) },
+                { x: (spawn.pos.x - 8), y: (spawn.pos.y - 1) },
+                { x: (spawn.pos.x - 7), y: (spawn.pos.y - 1) },
+                { x: (spawn.pos.x - 9), y: (spawn.pos.y) },
+                { x: (spawn.pos.x - 9), y: (spawn.pos.y + 1) },
+            );
+        }
+        if(controllerLevel >= 5) {
+            positions.push(
+                { x: (spawn.pos.x - 7), y: (spawn.pos.y + 1) },
+                { x: (spawn.pos.x - 8), y: (spawn.pos.y + 2) },
+                { x: (spawn.pos.x - 7), y: (spawn.pos.y + 2) },
+                { x: (spawn.pos.x - 6), y: (spawn.pos.y + 2) },
+                { x: (spawn.pos.x - 8), y: (spawn.pos.y + 3) },
+                { x: (spawn.pos.x - 7), y: (spawn.pos.y + 3) },
+                { x: (spawn.pos.x - 6), y: (spawn.pos.y + 3) },
+                { x: (spawn.pos.x - 5), y: (spawn.pos.y + 3) },
+                { x: (spawn.pos.x - 7), y: (spawn.pos.y + 4) },
+                { x: (spawn.pos.x - 6), y: (spawn.pos.y + 4) },
+            );
+        }
+        if(controllerLevel >= 6) {
+            positions.push(
+                { x: (spawn.pos.x - 3), y: (spawn.pos.y + 3) },
+                { x: (spawn.pos.x), y: (spawn.pos.y + 3) },
+                { x: (spawn.pos.x - 5), y: (spawn.pos.y + 4) },
+                { x: (spawn.pos.x - 4), y: (spawn.pos.y + 4) },
+                { x: (spawn.pos.x - 2), y: (spawn.pos.y + 4) },
+                { x: (spawn.pos.x - 1), y: (spawn.pos.y + 4) },
+                { x: (spawn.pos.x - 6), y: (spawn.pos.y + 5) },
+                { x: (spawn.pos.x - 5), y: (spawn.pos.y + 5) },
+                { x: (spawn.pos.x - 4), y: (spawn.pos.y + 5) },
+                { x: (spawn.pos.x - 3), y: (spawn.pos.y + 5) },
+            );
+        }
+        if(controllerLevel >= 7) {
+            positions.push(
+                { x: (spawn.pos.x + 1), y: (spawn.pos.y) },
+                { x: (spawn.pos.x - 1), y: (spawn.pos.y + 1) },
+                { x: (spawn.pos.x), y: (spawn.pos.y + 1) },
+                { x: (spawn.pos.x + 1), y: (spawn.pos.y + 1) },
+                { x: (spawn.pos.x - 2), y: (spawn.pos.y + 2) },
+                { x: (spawn.pos.x - 1), y: (spawn.pos.y + 2) },
+                { x: (spawn.pos.x), y: (spawn.pos.y + 2) },
+                { x: (spawn.pos.x + 1), y: (spawn.pos.y + 2) },
+                { x: (spawn.pos.x - 2), y: (spawn.pos.y + 3) },
+                { x: (spawn.pos.x - 1), y: (spawn.pos.y + 3) },
+            );
+        }
+        if(controllerLevel >= 8) {
+            positions.push(
+                { x: (spawn.pos.x + 1), y: (spawn.pos.y - 1) },
+            );
+        }
+
+
+        _.forEach(positions, function(position) {
+            let site = spawn.room.createConstructionSite(position.x, position.y, STRUCTURE_EXTENSION);
+            if(site === 0) {
+                console.log(`Built extension at: ${position.x}, ${position.y}`);
+            }
+        });
+
+        if(controllerLevel === 8) {
+            Memory.gameData.buildQueue[spawn.room.name].extensions = true;
+        }
+    },
+    buildRoads: function(spawn) {
+        console.log("<font color=#9b59b6>[Base Builder] Building Roads...</font>");
+        let positions = [
+            { x: (spawn.pos.x - 6), y: (spawn.pos.y - 6) },
+            { x: (spawn.pos.x - 5), y: (spawn.pos.y - 6) },
+            { x: (spawn.pos.x - 4), y: (spawn.pos.y - 6) },
+            { x: (spawn.pos.x - 3), y: (spawn.pos.y - 6) },
+            { x: (spawn.pos.x - 2), y: (spawn.pos.y - 6) },
+            { x: (spawn.pos.x - 7), y: (spawn.pos.y - 5) },
+            { x: (spawn.pos.x - 6), y: (spawn.pos.y - 5) },
+            { x: (spawn.pos.x - 1), y: (spawn.pos.y - 5) },
+            { x: (spawn.pos.x - 8), y: (spawn.pos.y - 4) },
+            { x: (spawn.pos.x - 5), y: (spawn.pos.y - 4) },
+            { x: (spawn.pos.x), y: (spawn.pos.y - 4) },
+            { x: (spawn.pos.x - 9), y: (spawn.pos.y - 3) },
+            { x: (spawn.pos.x - 4), y: (spawn.pos.y - 3) },
+            { x: (spawn.pos.x + 1), y: (spawn.pos.y - 3) },
+            { x: (spawn.pos.x - 10), y: (spawn.pos.y - 2) },
+            { x: (spawn.pos.x - 5), y: (spawn.pos.y - 2) },
+            { x: (spawn.pos.x - 3), y: (spawn.pos.y - 2) },
+            { x: (spawn.pos.x + 1), y: (spawn.pos.y - 2) },
+            { x: (spawn.pos.x + 2), y: (spawn.pos.y - 2) },
+            { x: (spawn.pos.x - 10), y: (spawn.pos.y - 1) },
+            { x: (spawn.pos.x - 6), y: (spawn.pos.y - 1) },
+            { x: (spawn.pos.x - 2), y: (spawn.pos.y - 1) },
+            { x: (spawn.pos.x), y: (spawn.pos.y - 1) },
+            { x: (spawn.pos.x + 2), y: (spawn.pos.y - 1) },
+            { x: (spawn.pos.x - 10), y: (spawn.pos.y) },
+            { x: (spawn.pos.x - 7), y: (spawn.pos.y) },
+            { x: (spawn.pos.x - 1), y: (spawn.pos.y) },
+            { x: (spawn.pos.x + 2), y: (spawn.pos.y) },
+            { x: (spawn.pos.x - 10), y: (spawn.pos.y + 1) },
+            { x: (spawn.pos.x - 8), y: (spawn.pos.y + 1) },
+            { x: (spawn.pos.x - 6), y: (spawn.pos.y + 1) },
+            { x: (spawn.pos.x - 2), y: (spawn.pos.y + 1) },
+            { x: (spawn.pos.x + 2), y: (spawn.pos.y + 1) },
+            { x: (spawn.pos.x - 10), y: (spawn.pos.y + 2) },
+            { x: (spawn.pos.x - 9), y: (spawn.pos.y + 2) },
+            { x: (spawn.pos.x - 5), y: (spawn.pos.y + 2) },
+            { x: (spawn.pos.x - 3), y: (spawn.pos.y + 2) },
+            { x: (spawn.pos.x + 2), y: (spawn.pos.y + 2) },
+            { x: (spawn.pos.x - 9), y: (spawn.pos.y + 3) },
+            { x: (spawn.pos.x - 4), y: (spawn.pos.y + 3) },
+            { x: (spawn.pos.x + 1), y: (spawn.pos.y + 3) },
+            { x: (spawn.pos.x - 8), y: (spawn.pos.y + 4) },
+            { x: (spawn.pos.x - 3), y: (spawn.pos.y + 4) },
+            { x: (spawn.pos.x), y: (spawn.pos.y + 4) },
+            { x: (spawn.pos.x - 7), y: (spawn.pos.y + 5) },
+            { x: (spawn.pos.x - 2), y: (spawn.pos.y + 5) },
+            { x: (spawn.pos.x - 1), y: (spawn.pos.y + 5) },
+            { x: (spawn.pos.x - 6), y: (spawn.pos.y + 6) },
+            { x: (spawn.pos.x - 5), y: (spawn.pos.y + 6) },
+            { x: (spawn.pos.x - 4), y: (spawn.pos.y + 6) },
+            { x: (spawn.pos.x - 3), y: (spawn.pos.y + 6) },
+            { x: (spawn.pos.x - 2), y: (spawn.pos.y + 6) },
+        ];
+
+        let buildSuccess = true;
+        _.forEach(positions, function(position) {
+            let site = spawn.room.createConstructionSite(position.x, position.y, STRUCTURE_ROAD);
+            if(site === 0) {
+                console.log(`Built road at: ${position.x}, ${position.y}`);
+            } else {
+                buildSuccess = false;
+                return false;
+            }
+        });
+
+        if(buildSuccess) {
+            Memory.gameData.buildQueue[spawn.room.name].roads = true;
+        }
+    },
+    checkBuildArea: function(spawn) {
+        let startX = (spawn.pos.x - 10);
+        let startY = (spawn.pos.y - 6);
+        let endX = (spawn.pos.x + 2);
+        let endY = (spawn.pos.y + 6);
+
+        console.log("Checking build area around spawn");
+        console.log(`Start XY: [${startX}, ${startY}]`);
+        console.log(`End XY: [${endX}, ${endY}]`);
+
+        if(startX <= 0 || startY <= 0 || endX >= 49 || endY >= 49) {
+            console.log("Can not build base here. Too close to edge.");
+            return false;
+        }
+
+        var positions = [];
+
+        for(x = startX; x <= endX && x < 49; x++) {
+            for(y = startY; y <= endY && y < 49; y++) {
+                if(x !== spawn.pos.x || y !== spawn.pos.y) {
+                    positions.push(new RoomPosition(x, y, spawn.room.name));
+                }
+            }
+        }
+
+        let terrain = Game.map.getRoomTerrain(spawn.room.name);
+
+        let walkablePositions = _.filter(positions, function(pos) {
+            return terrain.get(pos.x, pos.y) !== TERRAIN_MASK_WALL;
+        });
+
+        Memory.gameData.buildQueue[spawn.room.name].validSpawn = true;
+    },
+    checkBuildMemory: function(room) {
+        if(Memory.gameData.buildQueue === undefined) {
+            console.log("Build Memory Initializing...");
+            Memory.gameData.buildQueue = {};
+        }
+        if(Memory.gameData.buildQueue[room.name] === undefined) {
+            console.log(`Room ${room.name} added to the build memory.`);
+            Memory.gameData.buildQueue = {
+                [room.name]: {
+                    validSpawn: false,
+                    spawns: false,
+                    extensions: false,
+                    links: false,
+                    roads: false,
+                    walls: false,
+                    ramparts: false,
+                    storage: false,
+                    towers: false,
+                    observer: false,
+                    powerSpawn: false,
+                    extractor: false,
+                    terminal: false,
+                    labs: false,
+                    nuker: false,
+                    factory: false,
+                    firstRun: Game.time,
+                }
+            };
+        }
+        if(Memory.gameData.buildQueue[room.name].firstRun >= (Memory.gameData.buildQueue[room.name].firstRun + 1000)) {
+            console.log("Clearing Build Queue memory.");
+            delete Memory.gameData.buildQueue[room.name];
+        }
+    }
+}
+return module.exports;
+}
+/********** End of module 9: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\base.build.js **********/
+/********** Start module 10: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\utils.creep.js **********/
+__modules[10] = function(module, exports) {
 module.exports = {
     getMinimum: function(type) {
         if(!Memory.gameData.creepRoles[type].minimum) {
@@ -596,10 +862,10 @@ module.exports = {
 }
 return module.exports;
 }
-/********** End of module 9: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\utils.creep.js **********/
-/********** Start module 10: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.harvester.js **********/
-__modules[10] = function(module, exports) {
-const utilsCreep = __require(9,10);
+/********** End of module 10: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\utils.creep.js **********/
+/********** Start module 11: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.harvester.js **********/
+__modules[11] = function(module, exports) {
+const utilsCreep = __require(10,11);
 
 module.exports = {
 
@@ -644,10 +910,10 @@ module.exports = {
 };
 return module.exports;
 }
-/********** End of module 10: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.harvester.js **********/
-/********** Start module 11: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.upgrader.js **********/
-__modules[11] = function(module, exports) {
-const utilsCreep = __require(9,11);
+/********** End of module 11: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.harvester.js **********/
+/********** Start module 12: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.upgrader.js **********/
+__modules[12] = function(module, exports) {
+const utilsCreep = __require(10,12);
 
 module.exports = {
     /** @param {Creep} creep **/
@@ -691,10 +957,10 @@ module.exports = {
 }
 return module.exports;
 }
-/********** End of module 11: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.upgrader.js **********/
-/********** Start module 12: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.builder.js **********/
-__modules[12] = function(module, exports) {
-const utilsCreep = __require(9,12);
+/********** End of module 12: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.upgrader.js **********/
+/********** Start module 13: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.builder.js **********/
+__modules[13] = function(module, exports) {
+const utilsCreep = __require(10,13);
 
 module.exports = {
     /** @param {Creep} creep **/
@@ -738,10 +1004,10 @@ module.exports = {
 }
 return module.exports;
 }
-/********** End of module 12: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.builder.js **********/
-/********** Start module 13: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.repairer.js **********/
-__modules[13] = function(module, exports) {
-const utilsCreep = __require(9,13);
+/********** End of module 13: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.builder.js **********/
+/********** Start module 14: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.repairer.js **********/
+__modules[14] = function(module, exports) {
+const utilsCreep = __require(10,14);
 
 module.exports = {
     /** @param {Creep} creep **/
@@ -785,7 +1051,7 @@ module.exports = {
 }
 return module.exports;
 }
-/********** End of module 13: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.repairer.js **********/
+/********** End of module 14: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.repairer.js **********/
 /********** Footer **********/
 if(typeof module === "object")
 	module.exports = __require(0);
