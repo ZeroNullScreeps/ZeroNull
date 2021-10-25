@@ -77,7 +77,6 @@ module.exports.loop = function () {
             }
         }
     });
-    
     memoryController.clean();
     
 }
@@ -427,6 +426,7 @@ return module.exports;
 __modules[5] = function(module, exports) {
 module.exports = {
     harvester: __require(7,5),
+    upgrader: __require(8,5),
 }
 return module.exports;
 }
@@ -519,6 +519,53 @@ module.exports = {
 return module.exports;
 }
 /********** End of module 7: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.harvester.js **********/
+/********** Start module 8: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.upgrader.js **********/
+__modules[8] = function(module, exports) {
+const utilsCreep = __require(6,8);
+
+module.exports = {
+    /** @param {Creep} creep **/
+    run: function(creep) {
+        var task = creep.getWorkTask('mining', 'upgrading');
+        switch(task) {
+            case 'mining':
+                creep.mineEnergySource();
+                break;
+            case 'upgrading':
+                creep.transferToController();
+                break;
+        }
+    },
+    /**
+     * Checks if the room needs to spawn a creep.
+     *
+     * @param room - The current room that the spawner is in.
+     * @param minimum - The minimum number of creeps that is pulled from Memory.gameData.minimums
+     * @returns {boolean} - Returns true if the creep type should be spawned.
+     */
+    spawn: function(room, minimum) {
+        var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader' && creep.room.name === room.name);
+
+        if (upgraders.length < minimum) {
+            return true;
+        }
+    },
+    /**
+     * Defines the creep object that is passed to the createCreep() method on the StructureSpawn object.
+     * @param room - Defines the room that the spawner is in.
+     * @returns Object - Returns the creep object to be passed back to the spawner logic.
+     */
+    spawnData: function(room) {
+            let name = 'Upgrader' + Game.time;
+            let body = utilsCreep.getBody([WORK, CARRY, CARRY, MOVE], room);
+            let memory = {role: 'upgrader'};
+        
+            return {name, body, memory};
+    }
+}
+return module.exports;
+}
+/********** End of module 8: C:\Users\Jonathan\AppData\Local\Screeps\scripts\10_0_0_2___21025\ZeroNull\src\role.upgrader.js **********/
 /********** Footer **********/
 if(typeof module === "object")
 	module.exports = __require(0);

@@ -46,6 +46,7 @@ module.exports.loop = function () {
         }
     });
     
+    // Run the memory controller to save memory
     memoryController.clean();
     
 }
