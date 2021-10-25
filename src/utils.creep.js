@@ -21,7 +21,14 @@ module.exports = {
 
         // Define the rooms total energy capacity
         let energyAvailable = room.energyAvailable;
+        let energyCapacityAvailable = room.energyCapacityAvailable;
         let energyRatio = room.energyCapacityAvailable / room.energyAvailable;
+        
+        // If the energy capacity is equal to 300
+        if(energyCapacityAvailable === 300) {
+            // then return the segment
+            return segment;
+        }
 
         // console.log(`Energy Ratio: ${energyRatio}`);
         if(energyRatio <= 2) {
@@ -43,7 +50,6 @@ module.exports = {
                 });
             }
         }
-
 
         // Return the body array
         return body;

@@ -454,7 +454,11 @@ module.exports = {
      getBody: function(segment, room) {
         let body = [];
         let energyAvailable = room.energyAvailable;
+        let energyCapacityAvailable = room.energyCapacityAvailable;
         let energyRatio = room.energyCapacityAvailable / room.energyAvailable;
+        if(energyCapacityAvailable === 300) {
+            return segment;
+        }
         if(energyRatio <= 2) {
             while(energyAvailable >= 0) {
                 _.forEach(segment, function(bodyPart) {
