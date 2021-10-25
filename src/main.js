@@ -1,6 +1,8 @@
 // Require Prototypes
 require('./prototype.creep')();
 require('./prototype.room')();
+require('./prototype.string')();
+require('./prototype.global')();
 
 // Require Utilities
 const memoryController = require('./memoryController');

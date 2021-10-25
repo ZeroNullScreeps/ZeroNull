@@ -1,3 +1,6 @@
+const roleLogic = require('./roleLogic');
+let creepTypes = Object.keys(roleLogic);
+
 module.exports = {
     run: function() {
         // Check if the timedCommands are in Memory
@@ -13,6 +16,16 @@ module.exports = {
             // Run them
             this.runCommands();
         }
+    },
+    runCommands: function() {
+        console.log("<font color=#2ecc71>[Timed Commands] Running timed commands.</font>");
+
+        // Update the Builder Minimum value
+        // this.updateBuilderMin();
+        // Run the Base Builder Module
+        // this.runBaseBuilder();
+        // Give a report to console
+        this.giveReport();
     },
     init: function() {
         console.log("<font color=#e74c3c>[Timed Commands] Can not find timedCommands in Memory. Initiailizing...</font>");
@@ -30,14 +43,16 @@ module.exports = {
             return true;
         }
     },
-    runCommands: function() {
-        console.log("<font color=#2ecc71>[Timed Commands] Running timed commands.</font>");
-
-        // Update the Builder Minimum value
-        // this.updateBuilderMin();
-        // Run the Base Builder Module
-        // this.runBaseBuilder();
-        // Give a report to console
-        // this.giveReport();
+    giveReport: function() {
+        console.log("<font color=#e67e22>===========================================</font>");
+        console.log("<font color=#e67e22>Auto-Generated Report</font>");
+        console.log("<font color=#e67e22>===========================================</font>");
+        // Current Creep Count vs. Minimum Count
+        console.log("<font color=#3498db>Current Creep Count</font>");
+        _.forEach(creepTypes, function(type) {
+            let currentCount = _.filter(Game.creeps, (creep) => creep.memory.role === type).length;
+            let minimum = Memory.gameData.creepRoles[type].minimum;
+            console.log("<font color=#3498db>" + type.toTitleCase() + ":</font> " + currentCount + " / " + minimum);
+        });
     },
 }
